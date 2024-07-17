@@ -1,0 +1,209 @@
+{
+	"info": {
+		"_postman_id": "2ee6bb78-e598-4978-8718-f99d5b01340a",
+		"name": "Magic Transporter",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17590949"
+	},
+	"item": [
+		{
+			"name": "Create Mover",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"weight_limit\": 100, \"quest_state\": \"resting\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/magic-movers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"magic-movers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"name\": \"Magic Wand\", \"weight\": 10 }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/magic-items",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"magic-items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change State to Loading",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"moverId\" : \"6697bd95b6aec21b8745a2c1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/magic-movers/start-loading",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"magic-movers",
+						"start-loading"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Load Mover",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"moverId\" : \"6697bbbcbd4798cdf4d24d6c\",\r\n    \"items\" : [\"6697bbdabd4798cdf4d24d6e\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/magic-movers/load",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"magic-movers",
+						"load"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Start Mission",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"moverId\" : \"6697bd95b6aec21b8745a2c1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/magic-movers/start-mission",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"magic-movers",
+						"start-mission"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "End Mission",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"moverId\" : \"6697bd95b6aec21b8745a2c1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/magic-movers/end-mission",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"magic-movers",
+						"end-mission"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Top Movers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/magic-movers/top-movers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"magic-movers",
+						"top-movers"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

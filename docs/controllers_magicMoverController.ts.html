@@ -1,0 +1,261 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> controllers/magicMoverController.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">My Project Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    Documentation
+                </a>
+                
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Interfaces</h3><ul><li><a href="ILog.html">ILog</a></li><li><a href="IMagicItem.html">IMagicItem</a></li><li><a href="IMagicMover.html">IMagicMover</a></li></ul><h3>Global</h3><ul><li><a href="global.html#LogSchema">LogSchema</a></li><li><a href="global.html#MagicItemSchema">MagicItemSchema</a></li><li><a href="global.html#MagicMoverSchema">MagicMoverSchema</a></li><li><a href="global.html#addMagicItem">addMagicItem</a></li><li><a href="global.html#addMagicMover">addMagicMover</a></li><li><a href="global.html#endMission">endMission</a></li><li><a href="global.html#errorHandler">errorHandler</a></li><li><a href="global.html#listTopMovers">listTopMovers</a></li><li><a href="global.html#loadMagicMover">loadMagicMover</a></li><li><a href="global.html#port">port</a></li><li><a href="global.html#startMission">startMission</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>controllers/magicMoverController.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { Request, Response } from 'express';
+import MagicMover from '../models/MagicMover';
+import Log from '../models/log';
+import MagicItem from '../models/MagicItem';
+/**
+ * Add a new Magic Mover.
+ * @param {Request} req 
+ * @param {Response} res
+ */
+export const addMagicMover = async (req: Request, res: Response) => {
+  const { weight_limit, quest_state } = req.body;
+  try {
+    const newMover = new MagicMover({ weight_limit, quest_state });
+    await newMover.save();
+    res.status(201).json(newMover);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: 'An unknown error occurred' });
+    }
+  }
+};
+/**
+ * Load a Magic Mover with items.
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+export const loadMagicMover = async (req: Request, res: Response) => {
+  const { moverId, items } = req.body;
+  try {
+    const mover = await MagicMover.findById(moverId);
+    if (!mover) {
+      return res.status(404).json({ error: 'Magic Mover not found' });
+    }
+    if (mover.quest_state !== 'loading') {
+      return res.status(400).json({ error: 'Magic Mover is not in loading state' });
+    }
+    
+    const totalWeight = (await MagicItem.find({ _id: { $in: items } })).reduce((sum, item) => sum + item.weight, 0);
+    if (totalWeight > mover.weight_limit) {
+      return res.status(400).json({ error: 'Exceeds weight limit' });
+    }
+
+    mover.items.push(...items);
+    await mover.save();
+
+    const log = new Log({ mover_id: mover._id, action: 'loading', items });
+    await log.save();
+
+    res.status(200).json(mover);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: 'An unknown error occurred' });
+    }
+  }
+};
+/**
+ * Start a mission for a Magic Mover.
+ * @param {Request} req
+ * @param {Response} res
+ */
+export const startMission = async (req: Request, res: Response) => {
+  const { moverId } = req.body;
+  try {
+    const mover = await MagicMover.findById(moverId);
+    if (!mover) {
+      return res.status(404).json({ error: 'Magic Mover not found' });
+    }
+    if (mover.quest_state !== 'loading') {
+      return res.status(400).json({ error: 'Magic Mover is not in loading state' });
+    }
+
+    mover.quest_state = 'on-mission';
+    await mover.save();
+
+    const log = new Log({ mover_id: mover._id, action: 'on-mission', items: mover.items });
+    await log.save();
+
+    res.status(200).json(mover);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: 'An unknown error occurred' });
+    }
+  }
+};
+/**
+ * End a mission for a Magic Mover.
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+export const endMission = async (req: Request, res: Response) => {
+  const { moverId } = req.body;
+  try {
+    const mover = await MagicMover.findById(moverId);
+    if (!mover) {
+      return res.status(404).json({ error: 'Magic Mover not found' });
+    }
+    if (mover.quest_state !== 'on-mission') {
+      return res.status(400).json({ error: 'Magic Mover is not on a mission' });
+    }
+
+    mover.quest_state = 'resting';
+    mover.missions_completed += 1;
+    mover.items = [];
+    await mover.save();
+
+    const log = new Log({ mover_id: mover._id, action: 'resting', items: [] });
+    await log.save();
+
+    res.status(200).json(mover);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: 'An unknown error occurred' });
+    }
+  }
+};
+/**
+ * List Magic Movers who completed the most missions.
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+export const listTopMovers = async (req: Request, res: Response) => {
+  try {
+    const movers = await MagicMover.find().sort({ missions_completed: -1 });
+    res.status(200).json(movers);
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: 'An unknown error occurred' });
+    }
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.3</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+
+</body>
+</html>

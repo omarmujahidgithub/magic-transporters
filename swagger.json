@@ -1,0 +1,18 @@
+{
+    "swaggerDefinition": {
+      "openapi": "3.0.0",
+      "info": {
+        "title": "Magic Transporters API",
+        "version": "1.0.0",
+        "description": "API documentation for Magic Transporters"
+      },
+      "servers": [
+        {
+          "url": "http://localhost:3000",
+          "description": "Local server"
+        }
+      ]
+    },
+    "apis": ["./src/controllers/*.ts"]
+  }
+  

@@ -1,0 +1,190 @@
+openapi: 3.0.0
+info:
+  title: Magic Transporters API
+  version: 1.0.0
+  description: API documentation for Magic Transporters
+servers:
+  - url: http://localhost:3000
+    description: Local server
+paths:
+  /api/magic-movers:
+    post:
+      summary: Add a new Magic Mover
+      tags:
+        - MagicMovers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MagicMover'
+      responses:
+        201:
+          description: The created Magic Mover
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicMover'
+        500:
+          description: Server error
+  /api/magic-movers/load:
+    post:
+      summary: Load a Magic Mover with items
+      tags:
+        - MagicMovers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moverId:
+                  type: string
+                  description: The ID of the Magic Mover
+                items:
+                  type: array
+                  items:
+                    type: string
+                  description: The IDs of the items to load
+      responses:
+        200:
+          description: The updated Magic Mover
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicMover'
+        404:
+          description: Magic Mover not found
+        400:
+          description: Invalid state or exceeds weight limit
+        500:
+          description: Server error
+  /api/magic-movers/start-loading:
+    post:
+      summary: Transition a Magic Mover to the loading state
+      tags:
+        - MagicMovers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moverId:
+                  type: string
+                  description: The ID of the Magic Mover
+      responses:
+        200:
+          description: The updated Magic Mover
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicMover'
+        404:
+          description: Magic Mover not found
+        400:
+          description: Invalid state transition
+        500:
+          description: Server error
+  /api/magic-movers/start-mission:
+    post:
+      summary: Start a mission for a Magic Mover
+      tags:
+        - MagicMovers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moverId:
+                  type: string
+                  description: The ID of the Magic Mover
+      responses:
+        200:
+          description: The updated Magic Mover
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicMover'
+        404:
+          description: Magic Mover not found
+        400:
+          description: Invalid state
+        500:
+          description: Server error
+  /api/magic-movers/end-mission:
+    post:
+      summary: End a mission for a Magic Mover
+      tags:
+        - MagicMovers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                moverId:
+                  type: string
+                  description: The ID of the Magic Mover
+      responses:
+        200:
+          description: The updated Magic Mover
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicMover'
+        404:
+          description: Magic Mover not found
+        400:
+          description: Invalid state
+        500:
+          description: Server error
+  /api/magic-movers/top-movers:
+    get:
+      summary: List Magic Movers who completed the most missions
+      tags:
+        - MagicMovers
+      responses:
+        200:
+          description: A list of Magic Movers sorted by missions completed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MagicMover'
+        500:
+          description: Server error
+components:
+  schemas:
+    MagicMover:
+      type: object
+      required:
+        - weight_limit
+        - quest_state
+      properties:
+        weight_limit:
+          type: number
+          description: The maximum weight the mover can carry
+        quest_state:
+          type: string
+          enum: [resting, loading, on-mission]
+          description: The current state of the mover
+        items:
+          type: array
+          items:
+            type: string
+          description: List of item IDs the mover is carrying
+        missions_completed:
+          type: number
+          description: Number of missions completed by the mover
+      example:
+        weight_limit: 100
+        quest_state: resting
+        items: []
+        missions_completed: 0
