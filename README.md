@@ -1,4 +1,3 @@
-```markdown
 # Magic Transporters API
 
 Magic Transporters API is an Express.js-based REST API that manages Magic Movers and Magic Items. Magic Movers use nifty gadgets to move important things, and this API allows you to add, load, and manage their missions.
