@@ -146,5 +146,3 @@ The API documentation is available via Swagger.
 
 This project is licensed under the MIT License.
 ```
-
-This README file provides an overview of the project, setup instructions, features, technologies used, and details about running and testing the application. Adjust any parts according to your project's specific needs and details.
